@@ -12,7 +12,8 @@ if exists("g:loaded_coveragepy") || &cp
 endif
 
 " Global variables for registering next/previous error
-let g:coveragepy_last_session      = ""
+let g:coveragepy_last_session = ""
+let g:coveragepy_marks        = []
 
 
 function! s:CoveragePySyntax() abort
@@ -46,6 +47,27 @@ function! s:Echo(msg, ...)
 endfun
 
 
+function! s:AddMark()
+    if exists("g:coveragepy_marks") == 0
+        let g:coveragepy_marks = []
+    endif
+    let line = line('.')
+    call add(g:coveragepy_marks, line)
+    call s:Highlight()
+endfunction
+
+function! s:ClearSigns()
+    exe ":sign unplace *"
+endfunction
+
+function s:HighlightMissing()
+    sign define CoveragePy text=* linehl=Miss texthl=Error
+    for position in g:coveragepy_marks
+        execute(":sign place ". position ." line=". position ." name=CoveragePy file=".expand("%:p"))
+    endfor
+endfunction
+
+
 function! s:Strip(input_string)
     return split(a:input_string, "'")[0]
 endfunction
@@ -58,6 +80,19 @@ function! s:CoveragePyReport()
     let cmd = "coverage report -m -i" 
     let out = system(cmd)
     let g:coveragepy_last_session = out
+endfunction
+
+
+function! s:ReportParse()
+    " After coverage has ran, parse the content so we can get
+    " line numbers mapped to files
+    for line in split(g:coveragepy_last_session, '\n')
+        if w =~ '\v(\d+,|\d$)'
+            call s:ParseFailures(out)
+            return
+        endif
+    endfor
+
 endfunction
 
 
