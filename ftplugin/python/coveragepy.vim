@@ -1,13 +1,13 @@
 " File:        coveragepy.vim
 " Description: Displays coverage reports from Ned Batchelder's excellent
-"              coverage.py tool 
+"              coverage.py tool
 "              (see: http://nedbatchelder.com/code/coverage )
 " Maintainer:  Alfredo Deza <alfredodeza AT gmail.com>
 " License:     MIT
 "============================================================================
 
 
-if exists("g:loaded_coveragepy") || &cp 
+if exists("g:loaded_coveragepy") || &cp
   finish
 endif
 
@@ -25,9 +25,9 @@ function! s:CoveragePySyntax() abort
   syn match CoveragePyLineNumbers          "\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)"
 
   hi def link CoveragePyFiles              Number
-  hi def link CoveragePyHeaders            Keyword
+  hi def link CoveragePyHeaders            Comment
   hi def link CoveragePyTitleDecoration    Keyword
-  hi def link CoveragePyDelimiter          Keyword
+  hi def link CoveragePyDelimiter          Comment
   hi def link CoveragePyPercent            Boolean
   hi def link CoveragePyLineNumbers        Error
 endfunction
@@ -60,7 +60,7 @@ function! s:ClearSigns()
     exe ":sign unplace *"
 endfunction
 
-function s:HighlightMissing()
+function! s:HighlightMissing()
     sign define CoveragePy text=* linehl=Miss texthl=Error
     for position in g:coveragepy_marks
         execute(":sign place ". position ." line=". position ." name=CoveragePy file=".expand("%:p"))
@@ -69,7 +69,7 @@ endfunction
 
 
 function! s:Strip(input_string)
-    return split(a:input_string, "'")[0]
+    return split(a:input_string, " ")[0]
 endfunction
 
 
@@ -83,18 +83,39 @@ function! s:CoveragePyReport()
 endfunction
 
 
-function! s:ReportParse()
+function! ReportParse()
     " After coverage has ran, parse the content so we can get
     " line numbers mapped to files
     for line in split(g:coveragepy_last_session, '\n')
-        if w =~ '\v(\d+,|\d$)'
-            call s:ParseFailures(out)
-            return
+        if (line =~ '\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)') && line !~ '\v(100\%)'
+            let match_split = split(line, '%')
+            let line_nos = match_split[-1]
+            let all_line_nos = s:LineNumberParse(line_nos)
+            echo all_line_nos
         endif
     endfor
 
 endfunction
 
+function! s:LineNumberParse(numbers)
+    " Line numbers will come with a possible comma in them
+    " and lots of extra space. Let's remove them and strip them
+    let parsed_list = []
+    let splitted = split(a:numbers, ',')
+    for line_no in splitted
+        if line_no =~ '-'
+            let split_nos = split(line_no, '-')
+            let first = s:Strip(split_nos[0])
+            let second = s:Strip(split_nos[1])
+            for range_no in range(first, second)
+                call add(parsed_list, range_no)
+            endfor
+        else
+            call add(parsed_list, s:Strip(line_no))
+        endif
+    endfor
+    return parsed_list
+endfunction
 
 function! s:ClearAll()
     let bufferL = ['LastSession.coveragepy']
@@ -114,12 +135,12 @@ function! s:LastSession()
         call s:Echo("There is currently no saved coverage.py last session to display")
         return
     endif
-	let winnr = bufwinnr('LastSession.coveragepy')
-	silent! execute  winnr < 0 ? 'botright new ' . 'LastSession.coveragepy' : winnr . 'wincmd w'
-	setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap number filetype=coveragepy
+ let winnr = bufwinnr('LastSession.coveragepy')
+ silent! execute  winnr < 0 ? 'botright new ' . 'LastSession.coveragepy' : winnr . 'wincmd w'
+ setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap number filetype=coveragepy
     let session = split(g:coveragepy_last_session, '\n')
     call append(0, session)
-	silent! execute 'resize ' . line('$')
+ silent! execute 'resize ' . line('$')
     silent! execute 'normal gg'
     silent! execute 'nnoremap <silent> <buffer> q :q! <CR>'
     call s:CoveragePySyntax()
