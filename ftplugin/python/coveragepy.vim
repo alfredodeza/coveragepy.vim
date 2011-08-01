@@ -11,10 +11,15 @@ if exists("g:loaded_coveragepy") || &cp
   finish
 endif
 
+if (executable("coverage") == 0)
+    echoerr("This plugin needs coverage.py installad and accesible")
+    finish
+endif
+
 " Global variables for registering next/previous error
 let g:coveragepy_last_session = ""
 let g:coveragepy_marks        = []
-let g:coveragepy_session_map    = {}
+let g:coveragepy_session_map  = {}
 
 
 function! s:CoveragePySyntax() abort
