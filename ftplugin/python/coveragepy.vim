@@ -14,7 +14,7 @@ endif
 " Global variables for registering next/previous error
 let g:coveragepy_last_session = ""
 let g:coveragepy_marks        = []
-let g:coverapy_session_map    = {}
+let g:coveragepy_session_map    = {}
 
 
 function! s:CoveragePySyntax() abort
@@ -55,12 +55,12 @@ endfunction
 
 function! s:HighlightMissing()
     sign define CoveragePy text=! linehl=Miss texthl=Error
-    if g:coveragepy_session_map == {}
-        call Echo("No previous coverage report available")
+    if (g:coveragepy_session_map == {})
+        call s:Echo("No previous coverage report available")
         return
     endif
     call s:ClearSigns()
-    let current_buffer = split(expand("%:t"), ".py")[0]
+    let current_buffer = split(expand("%:r"), ".py")[0]
     for path in keys(g:coveragepy_session_map)
         if path =~ current_buffer
             for position in g:coveragepy_session_map[path]
@@ -73,6 +73,40 @@ endfunction
 
 function! s:Strip(input_string)
     return split(a:input_string, " ")[0]
+endfunction
+
+
+function! s:Roulette(direction)                                                                                                                                                                                                                                                   
+    let orig_line = line('.')
+    let last_line = line('$') - 3
+    
+    " if for some reason there is not enough
+    " coverage output return
+    if last_line < 3
+        return
+    endif
+
+    " Move to the line we need
+    let move_to = orig_line + a:direction
+
+    if move_to > last_line
+        let move_to = 3
+        exe move_to
+    elseif (move_to < 3) && (a:direction == -1)
+        let move_to = last_line
+        exe move_to
+    elseif (move_to < 3) && (a:direction == 1)
+        let move_to = 3
+        exe move_to
+    else
+        exe move_to
+    endif
+
+    if move_to == 1
+        let _num = move_to
+    else
+        let _num = move_to - 1
+    endif
 endfunction
 
 
@@ -127,7 +161,7 @@ endfunction
 
 
 function! s:ClearAll()
-    let bufferL = ['LastSession.coveragepy']
+    let bufferL = ['LastSession.coveragepy', 'OpenBuffer.coveragepy']
     for b in bufferL
         let _window = bufwinnr(b)
         if (_window != -1)
@@ -152,10 +186,25 @@ function! s:LastSession()
     silent! execute 'resize ' . line('$')
     silent! execute 'normal gg'
     silent! execute 'nnoremap <silent> <buffer> q :q! <CR>'
+    nnoremap <silent><script> <buffer> <C-n>   :call <sid>Roulette(1)<CR>
+    nnoremap <silent><script> <buffer> <down>  :call <sid>Roulette(1)<CR>
+    nnoremap <silent><script> <buffer> j       :call <sid>Roulette(1)<CR>
+    nnoremap <silent><script> <buffer> <C-p>   :call <sid>Roulette(-1)<CR>
+    nnoremap <silent><script> <buffer> <up>    :call <sid>Roulette(-1)<CR>
+    nnoremap <silent><script> <buffer> k       :call <sid>Roulette(-1)<CR>
+    nnoremap <silent> <buffer> <Enter>         :call <sid>OpenBuffer()<CR>
     call s:CoveragePySyntax()
     exe 'wincmd p'
 endfunction
 
+function! s:OpenBuffer()
+    let path = split(getline('.'), ' ')[0] . '.py'
+    execute 'wincmd p'
+    silent! execute ":e " . path
+    call s:HighlightMissing()
+    execute 'wincmd p'
+    call s:CoveragePySyntax()
+endfunction
 
 function! s:Version()
     call s:Echo("coveragepy version 0.0.1dev", 1)
