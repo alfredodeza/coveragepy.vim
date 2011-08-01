@@ -202,17 +202,23 @@ function! s:LastSession()
     exe 'wincmd p'
 endfunction
 
+
 function! s:OpenBuffer()
     let path = split(getline('.'), ' ')[0] . '.py'
-    execute 'wincmd p'
-    silent! execute ":e " . path
-    call s:HighlightMissing()
-    execute 'wincmd p'
-    call s:CoveragePySyntax()
+    if filereadable(path)
+        execute 'wincmd p'
+        silent! execute ":e " . path
+        call s:HighlightMissing()
+        execute 'wincmd p'
+        call s:CoveragePySyntax()
+    else
+        call s:Echo("Could not load file: " . path)
+    endif
 endfunction
 
+
 function! s:Version()
-    call s:Echo("coveragepy version 0.0.1dev", 1)
+    call s:Echo("coveragepy version 1.0dev", 1)
 endfunction
 
 
