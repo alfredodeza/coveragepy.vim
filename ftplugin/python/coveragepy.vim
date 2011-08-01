@@ -133,7 +133,7 @@ function! s:ReportParse()
     let path_to_lines = {}
     for line in split(g:coveragepy_last_session, '\n')
         if (line =~ '\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)') && line !~ '\v(100\%)'
-            let path   = split(line, ' ')[0]
+            let path         = split(line, ' ')[0]
             let match_split  = split(line, '%')
             let line_nos     = match_split[-1]
             let all_line_nos = s:LineNumberParse(line_nos)
@@ -166,7 +166,7 @@ endfunction
 
 
 function! s:ClearAll()
-    let bufferL = ['LastSession.coveragepy', 'OpenBuffer.coveragepy']
+    let bufferL = ['LastSession.coveragepy']
     for b in bufferL
         let _window = bufwinnr(b)
         if (_window != -1)
