@@ -223,16 +223,14 @@ endfunction
 
 
 function! s:Completion(ArgLead, CmdLine, CursorPos)
-    let actions = "report\nreload\nshow\nnoshow\nsession\n"
+    let actions = "report\nshow\nnoshow\nsession\n"
     let extras  = "version\n"
     return actions . extras
 endfunction
 
 
 function! s:Proxy(action, ...)
-    if (a:action == "template")
-        call s:FindTemplate()
-    elseif (a:action == "show")
+    if (a:action == "show")
         call s:HighlightMissing()
     elseif (a:action == "noshow")
         call s:ClearSigns()
