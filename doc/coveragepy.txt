@@ -4,13 +4,13 @@ buffer that allows to mark missing statements.
 ==============================================================================
 CONTENTS                                                 *CoveragePy-contents*
 
-    1. Intro .......................... |CoveragePyIntro|
-    2. Usage .......................... |CoveragePyUsage|
-    3. PDB ............................ |CoveragePyPDB|
-    4. Shell Support .................. |ShellSupport|
-    5. Loop on Fail ................... |LooponFail|
+    1. Intro ............................ |CoveragePyIntro|
+    2. Usage ............................ |CoveragePyUsage|
+    3. report .......................... |CoveragePyReport|
+    4. Session .................................. |Session|
+    5. Show and Noshow ....................... |ShowNoshow|
     6. License ........................ |CoveragePyLicense|
-    7. Bugs ........................... |CoveragePyBugs|
+    7. Bugs .............................. |CoveragePyBugs|
     8. Credits ........................ |CoveragePyCredits|
 
 ==============================================================================
