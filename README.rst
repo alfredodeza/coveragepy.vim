@@ -1,6 +1,6 @@
 coveragepy.vim
 ==============
-A Vim plugin to help integrate Ned Batchelder's excellent `coverage.py` (see:
+A Vim plugin to help integrate Ned Batchelder's excellent ``coverage.py`` (see:
 http://nedbatchelder.com/code/coverage/) tool into the editor.
 
 Allows you to bring up a buffer with detailed information from a coverage
@@ -20,13 +20,13 @@ inside your bundle dir, otherwise it is a single file that should go into::
 
 Usage
 =====
-This plugin provides a single command: `CoveragePy` that accepts a few
+This plugin provides a single command: ``CoveragePy`` that accepts a few
 arguments. Each argument and its usage is described in detail below.
 
-`report`
+``report``
 --------
-The main action is performed with this command (same as with `coverage.py`) and
-when it runs it calls `coverage.py` and loads the information into a split
+The main action is performed with this command (same as with ``coverage.py``) and
+when it runs it calls ``coverage.py`` and loads the information into a split
 buffer.
 
 It also collects all the information needed to be able to mark all lines from
@@ -35,14 +35,14 @@ files that have reported missing coverage statements. To run this command do::
     :CoveragePy report
 
 
-`session`
+``session``
 ---------
 This argument toggles the reporting buffer (closes it is open or opens if it is
 not already there). Makes sense to map it directly as a shortcut as it is
 completely toggable.
 
 
-`show` and `noshow`
+``show`` and ``noshow``
 -------------------
 Shows or hides the actual Vim `sign` marks that display which lines are missing
 coverage.
@@ -50,7 +50,7 @@ It is useful to be able to hide these if you are already aware about the lines
 that need to be covered and do not want to be visually disturbed by the signs.
 
 
-`version`
+``version``
 ---------
 Displays the current plugin version
 
