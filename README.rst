@@ -41,6 +41,13 @@ This argument toggles the reporting buffer (closes it is open or opens if it is
 not already there). Makes sense to map it directly as a shortcut as it is
 completely toggable.
 
+A big plus on this session buffer is that you can navigate through the list of 
+reported paths (it actually circles through!) with the arrow keys or j and k.
+
+If you want to navigate to a reported path that has missing lines just hit
+Enter (or Return) and the plugin will go to the previous window and open that
+selected file and then display the missing lines.
+
 
 ``show`` and ``noshow``
 -------------------
