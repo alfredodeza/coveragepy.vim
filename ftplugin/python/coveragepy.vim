@@ -52,6 +52,17 @@ function! s:Echo(msg, ...)
     let &ruler=x | let &showcmd=y
 endfun
 
+function! s:FindCoverage()
+    " Extremely dumb: will not work unless you have a
+    " top level template dir
+    let found = findfile(".coverage", ".;")
+    if (found !~ '.coverage')
+        return ""
+    endif
+    " Return the actual directory where .coverage is found
+    return fnamemodify(found, ":h")
+endfunction
+
 
 function! s:ClearSigns()
     exe ":sign unplace *"
@@ -81,7 +92,7 @@ function! s:Strip(input_string)
 endfunction
 
 
-function! s:Roulette(direction)                                                                                                                                                                                                                                                   
+function! s:Roulette(direction)
     let orig_line = line('.')
     let last_line = line('$') - 3
     
@@ -118,12 +129,27 @@ endfunction
 function! s:CoveragePyReport()
     " Run a report, ignore errors and show missing lines,
     " which is what we are interested after all :)
-    call s:ClearSigns()
-    let g:coveragepy_last_session = ""
-    let cmd = "coverage report -m -i" 
-    let out = system(cmd)
-    let g:coveragepy_last_session = out
-    call s:ReportParse()
+    let original_dir = getcwd()
+    " First try to see if we actually have a .coverage file
+    " to work with
+    let has_coverage = s:FindCoverage()
+    if (has_coverage == "")
+        return 0
+    else
+        " change dir to where coverage is
+        " and do all the magic we need
+        exe "cd " . has_coverage
+        call s:ClearSigns()
+        let g:coveragepy_last_session = ""
+        let cmd = "coverage report -m -i" 
+        let out = system(cmd)
+        let g:coveragepy_last_session = out
+        call s:ReportParse()
+
+        " Finally get back to where we initially where
+        exe "cd " . original_dir
+        return 1
+    endif
 endfunction
 
 
@@ -244,9 +270,13 @@ function! s:Proxy(action, ...)
             call s:LastSession()
         endif
     elseif (a:action == "report")
-        call s:CoveragePyReport()
-        call s:LastSession()
-        call s:HighlightMissing()
+        let report =  s:CoveragePyReport()
+        if report == 1
+            call s:LastSession()
+            call s:HighlightMissing()
+        else
+            call s:Echo("No .coverage was found in current or parent dirs")
+        endif
     elseif (a:action == "version")
         call s:Version()
     endif
