@@ -147,7 +147,7 @@ function! s:CoveragePyReport()
         call s:ReportParse()
 
         " Finally get back to where we initially where
-        exe "cd " . original_dir
+        "exe "cd " . original_dir
         return 1
     endif
 endfunction
@@ -231,9 +231,10 @@ endfunction
 
 function! s:OpenBuffer()
     let path = split(getline('.'), ' ')[0] . '.py'
-    if filereadable(path)
+    let absolute_path = fnamemodify(path, ":p")
+    if filereadable(absolute_path)
         execute 'wincmd p'
-        silent! execute ":e " . path
+        silent! execute ":e " . absolute_path
         call s:HighlightMissing()
         execute 'wincmd p'
         call s:CoveragePySyntax()
