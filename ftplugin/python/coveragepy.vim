@@ -39,7 +39,7 @@ function! s:CoveragePySyntax() abort
 endfunction
 
 
-function! s:Echo(msg, ...)
+function! s:Echo(msg, ...) abort
     redraw!
     let x=&ruler | let y=&showcmd
     set noruler noshowcmd
@@ -52,7 +52,7 @@ function! s:Echo(msg, ...)
     let &ruler=x | let &showcmd=y
 endfun
 
-function! s:FindCoverage()
+function! s:FindCoverage() abort
     " Extremely dumb: will not work unless you have a
     " top level template dir
     let found = findfile(".coverage", ".;")
@@ -64,12 +64,12 @@ function! s:FindCoverage()
 endfunction
 
 
-function! s:ClearSigns()
+function! s:ClearSigns() abort
     exe ":sign unplace *"
 endfunction
 
 
-function! s:HighlightMissing()
+function! s:HighlightMissing() abort
     sign define CoveragePy text=! linehl=Miss texthl=Error
     if (g:coveragepy_session_map == {})
         call s:Echo("No previous coverage report available")
@@ -87,12 +87,12 @@ function! s:HighlightMissing()
 endfunction
 
 
-function! s:Strip(input_string)
+function! s:Strip(input_string) abort
     return split(a:input_string, " ")[0]
 endfunction
 
 
-function! s:Roulette(direction)
+function! s:Roulette(direction) abort
     let orig_line = line('.')
     let last_line = line('$') - 3
     
@@ -126,7 +126,7 @@ function! s:Roulette(direction)
 endfunction
 
 
-function! s:CoveragePyReport()
+function! s:CoveragePyReport() abort
     " Run a report, ignore errors and show missing lines,
     " which is what we are interested after all :)
     let original_dir = getcwd()
@@ -153,7 +153,7 @@ function! s:CoveragePyReport()
 endfunction
 
 
-function! s:ReportParse()
+function! s:ReportParse() abort
     " After coverage runs, parse the content so we can get
     " line numbers mapped to files
     let path_to_lines = {}
@@ -170,7 +170,7 @@ function! s:ReportParse()
 endfunction
 
 
-function! s:LineNumberParse(numbers)
+function! s:LineNumberParse(numbers) abort
     " Line numbers will come with a possible comma in them
     " and lots of extra space. Let's remove them and strip them
     let parsed_list = []
@@ -191,7 +191,7 @@ function! s:LineNumberParse(numbers)
 endfunction
 
 
-function! s:ClearAll()
+function! s:ClearAll() abort
     let bufferL = ['LastSession.coveragepy']
     for b in bufferL
         let _window = bufwinnr(b)
@@ -203,7 +203,7 @@ function! s:ClearAll()
 endfunction
 
 
-function! s:LastSession()
+function! s:LastSession() abort
     call s:ClearAll()
     if (len(g:coveragepy_last_session) == 0)
         call s:Echo("There is currently no saved coverage.py session to display")
@@ -229,7 +229,7 @@ function! s:LastSession()
 endfunction
 
 
-function! s:OpenBuffer()
+function! s:OpenBuffer() abort
     let path = split(getline('.'), ' ')[0] . '.py'
     let absolute_path = fnamemodify(path, ":p")
     if filereadable(absolute_path)
@@ -244,19 +244,19 @@ function! s:OpenBuffer()
 endfunction
 
 
-function! s:Version()
+function! s:Version() abort
     call s:Echo("coveragepy version 1.0dev", 1)
 endfunction
 
 
-function! s:Completion(ArgLead, CmdLine, CursorPos)
+function! s:Completion(ArgLead, CmdLine, CursorPos) abort
     let actions = "report\nshow\nnoshow\nsession\n"
     let extras  = "version\n"
     return actions . extras
 endfunction
 
 
-function! s:Proxy(action, ...)
+function! s:Proxy(action, ...) abort
     if (a:action == "show")
         call s:HighlightMissing()
     elseif (a:action == "noshow")
