@@ -80,7 +80,7 @@ function! s:HighlightMissing() abort
     for path in keys(g:coveragepy_session_map)
         if path =~ current_buffer
             for position in g:coveragepy_session_map[path]
-                execute(":sign place ". position ." line=". position ." name=CoveragePy file=".expand("%:p"))
+                execute(":sign place ". position ." line=". position ." name=CoveragePy buffer=".bufnr("%"))
             endfor
         endif
     endfor
