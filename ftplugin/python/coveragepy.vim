@@ -12,7 +12,7 @@ if exists("g:loaded_coveragepy") || &cp
 endif
 
 if (executable("coverage") == 0)
-    echoerr("This plugin needs coverage.py installad and accesible")
+    echoerr("This plugin needs coverage.py installed and accessible")
     finish
 endif
 
