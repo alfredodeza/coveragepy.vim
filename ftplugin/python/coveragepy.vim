@@ -11,10 +11,10 @@ if exists("g:loaded_coveragepy") || &cp
   finish
 endif
 
-if (executable("coverage") == 0)
-    echoerr("This plugin needs coverage.py installed and accessible")
-    finish
-endif
+"if (executable("coverage") == 0)
+"    echoerr("This plugin needs coverage.py installad and accesible")
+"    finish
+"endif
 
 " Global variables for registering next/previous error
 let g:coveragepy_last_session = ""
@@ -53,8 +53,6 @@ function! s:Echo(msg, ...) abort
 endfun
 
 function! s:FindCoverage() abort
-    " Extremely dumb: will not work unless you have a
-    " top level template dir
     let found = findfile(".coverage", ".;")
     if (found !~ '.coverage')
         return ""
@@ -68,12 +66,16 @@ function! s:ClearSigns() abort
     exe ":sign unplace *"
 endfunction
 
+function! s:SetHighlight()
+    hi SignColumn guifg=#004400 guibg=#004400 ctermfg=2 ctermbg=2
+    hi uncovered guifg=#ff2222 guibg=#ff2222 ctermfg=1 ctermbg=1
+    sign define uncovered text=XX texthl=uncovered
+endfunction
 
 function! s:HighlightMissing() abort
-    sign define CoveragePy text=! linehl=Miss texthl=Error
+    call s:SetHighlight()
     if (g:coveragepy_session_map == {})
-        call s:Echo("No previous coverage report available")
-        return
+        call s:CoveragePyReport()
     endif
     call s:ClearSigns()
     let current_buffer = split(expand("%:r"), ".py")[0]
@@ -147,7 +149,7 @@ function! s:CoveragePyReport() abort
         call s:ReportParse()
 
         " Finally get back to where we initially where
-        "exe "cd " . original_dir
+        exe "cd " . original_dir
         return 1
     endif
 endfunction
