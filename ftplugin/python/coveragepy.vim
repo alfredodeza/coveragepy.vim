@@ -11,10 +11,12 @@ if exists("g:loaded_coveragepy") || &cp
   finish
 endif
 
-"if (executable("coverage") == 0)
-"    echoerr("This plugin needs coverage.py installad and accesible")
-"    finish
-"endif
+function! s:HasCoverage() abort
+    if (executable("coverage") == 0)
+        echoerr("This plugin needs coverage.py installed and accessible")
+        finish
+    endif
+endfunction
 
 " Global variables for registering next/previous error
 let g:coveragepy_last_session = ""
@@ -259,6 +261,8 @@ endfunction
 
 
 function! s:Proxy(action, ...) abort
+    " Make sure that if we are called, we have coverage installed
+    call s:HasCoverage()
     if (a:action == "show")
         call s:HighlightMissing()
     elseif (a:action == "noshow")
