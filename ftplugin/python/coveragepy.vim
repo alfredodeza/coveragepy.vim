@@ -69,8 +69,8 @@ function! s:ClearSigns() abort
 endfunction
 
 function! s:SetHighlight()
-    hi SignColumn guifg=#004400 guibg=#004400 ctermfg=2 ctermbg=2
-    hi uncovered guifg=#ff2222 guibg=#ff2222 ctermfg=1 ctermbg=1
+    hi SignColumn guifg=#004400 guibg=green ctermfg=40 ctermbg=40
+    hi uncovered guifg=#ff2222 guibg=red ctermfg=1 ctermbg=1
     sign define uncovered text=XX texthl=uncovered
 endfunction
 
@@ -84,10 +84,11 @@ function! s:HighlightMissing() abort
     for path in keys(g:coveragepy_session_map)
         if path =~ current_buffer
             for position in g:coveragepy_session_map[path]
-                execute(":sign place ". position ." line=". position ." name=CoveragePy buffer=".bufnr("%"))
+                execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
         endif
     endfor
+    redraw!
 endfunction
 
 
@@ -210,8 +211,7 @@ endfunction
 function! s:LastSession() abort
     call s:ClearAll()
     if (len(g:coveragepy_last_session) == 0)
-        call s:Echo("There is currently no saved coverage.py session to display")
-        return
+        call s:CoveragePyReport()
     endif
     let winnr = bufwinnr('LastSession.coveragepy')
     silent! execute  winnr < 0 ? 'botright new ' . 'LastSession.coveragepy' : winnr . 'wincmd w'
