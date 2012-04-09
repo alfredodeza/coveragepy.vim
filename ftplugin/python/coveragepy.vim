@@ -80,9 +80,9 @@ function! s:HighlightMissing() abort
         call s:CoveragePyReport()
     endif
     call s:ClearSigns()
-    let current_buffer = split(expand("%:r"), ".py")[0]
+    let current_buffer = split(expand("%:p"), ".py")[0]
     for path in keys(g:coveragepy_session_map)
-        if path =~ current_buffer
+        if current_buffer =~ path
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
@@ -100,7 +100,7 @@ endfunction
 function! s:Roulette(direction) abort
     let orig_line = line('.')
     let last_line = line('$') - 3
-    
+
     " if for some reason there is not enough
     " coverage output return
     if last_line < 3
@@ -141,12 +141,15 @@ function! s:CoveragePyReport() abort
     if (has_coverage == "")
         return 0
     else
+        " set the original directory path
+        " as a global
+        let g:coveragepy_path = has_coverage
         " change dir to where coverage is
         " and do all the magic we need
         exe "cd " . has_coverage
         call s:ClearSigns()
         let g:coveragepy_last_session = ""
-        let cmd = "coverage report -m -i" 
+        let cmd = "coverage report -m -i"
         let out = system(cmd)
         let g:coveragepy_last_session = out
         call s:ReportParse()
@@ -235,7 +238,7 @@ endfunction
 
 function! s:OpenBuffer() abort
     let path = split(getline('.'), ' ')[0] . '.py'
-    let absolute_path = fnamemodify(path, ":p")
+    let absolute_path = g:coveragepy_path . '/' . path
     if filereadable(absolute_path)
         execute 'wincmd p'
         silent! execute ":e " . absolute_path
