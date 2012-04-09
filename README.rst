@@ -36,7 +36,7 @@ files that have reported missing coverage statements. To run this command do::
 
 
 ``session``
----------
+-----------
 This argument toggles the reporting buffer (closes it is open or opens if it is
 not already there). Makes sense to map it directly as a shortcut as it is
 completely toggable.
@@ -50,7 +50,7 @@ selected file and then display the missing lines.
 
 
 ``show`` and ``noshow``
--------------------
+-----------------------
 Shows or hides the actual Vim `sign` marks that display which lines are missing
 coverage.
 It is useful to be able to hide these if you are already aware about the lines
@@ -58,7 +58,7 @@ that need to be covered and do not want to be visually disturbed by the signs.
 
 
 ``version``
----------
+-----------
 Displays the current plugin version
 
 
