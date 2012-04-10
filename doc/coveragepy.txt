@@ -2,19 +2,19 @@
 buffer that allows to mark missing statements.
 
 ==============================================================================
-CONTENTS                                                 *CoveragePy-contents*
+CONTENTS                                                 *Coveragepy-contents*
 
-    1. Intro ............................ |CoveragePyIntro|
-    2. Usage ............................ |CoveragePyUsage|
-    3. report .......................... |CoveragePyReport|
+    1. Intro ............................ |CoveragepyIntro|
+    2. Usage ............................ |CoveragepyUsage|
+    3. report .......................... |CoveragepyReport|
     4. Session .................................. |Session|
-    5. Show and Noshow ....................... |ShowNoshow|
-    6. License ........................ |CoveragePyLicense|
-    7. Bugs .............................. |CoveragePyBugs|
-    8. Credits ........................ |CoveragePyCredits|
+    5. Show .................................. |ShowNoshow|
+    6. License ........................ |CoveragepyLicense|
+    7. Bugs .............................. |CoveragepyBugs|
+    8. Credits ........................ |CoveragepyCredits|
 
 ==============================================================================
-1. Intro                                                     *CoveragePyIntro*
+1. Intro                                                     *CoveragepyIntro*
 
 A Vim plugin to help integrate Ned Batchelder's excellent ``coverage.py`` (see:
 http://nedbatchelder.com/code/coverage/) tool into the editor.
@@ -28,11 +28,11 @@ statements and display the missed lines.
 Optionally, you can also hide or display the marks as you make progress.
 
 ==============================================================================
-2. Usage                                                     *CoveragePyUsage*
+2. Usage                                                     *CoveragepyUsage*
 
 This plugin provides a single command::
 
-    CoveragePy
+    Coveragepy
 
 All arguments are able to be tab-completed.
 
@@ -42,11 +42,10 @@ These arguments are::
     report
     session
     show
-    noshow
     version
 
 ==============================================================================
-3. Report                                                   *CoveragePyReport*
+3. Report                                                   *CoveragepyReport*
 
 The main action is performed with this command (same as with ``coverage.py``)
 and when it runs it calls ``coverage.py`` and loads the information into
@@ -55,7 +54,7 @@ a split buffer.
 It also collects all the information needed to be able to mark all lines from
 files that have reported missing coverage statements. To run this command do::
 
-    :CoveragePy report
+    :Coveragepy report
 
 ==============================================================================
 4. Session                                                           *Session*
@@ -81,7 +80,7 @@ that need to be covered and do not want to be visually disturbed by the signs.
 
 
 ==============================================================================
-5. License                                                 *CoveragePyLicense*
+5. License                                                 *CoveragepyLicense*
 
 MIT
 Copyright (c) 2011 Alfredo Deza <alfredodeza [at] gmail [dot] com>
@@ -105,15 +104,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ==============================================================================
-6. Bugs                                                       *CoveragePyBugs*
+6. Bugs                                                       *CoveragepyBugs*
 
 If you find a bug please post it on the issue tracker:
 https://github.com/alfredodeza/coveragepy.vim/issues
 
 ==============================================================================
-7. Credits                                                 *CoveragePyCredits*
+7. Credits                                                 *CoveragepyCredits*
 
-Thanks to Ned Batchelder for the awesome ``coverage.py`` tool, continously
+Thanks to Ned Batchelder for the awesome ``coverage.py`` tool, continuously
 making a huge difference in my day to day testing.
 
 ==============================================================================
