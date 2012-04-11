@@ -269,7 +269,7 @@ endfunction
 
 
 function! s:Version() abort
-    call s:Echo("coveragepy version 1.0dev", 1)
+    call s:Echo("coveragepy version 1.1dev", 1)
 endfunction
 
 
