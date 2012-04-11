@@ -94,12 +94,17 @@ function! s:HighlightMissing() abort
         call s:CoveragepyReport()
     endif
     call s:ClearSigns()
-    let current_buffer = split(expand("%:p"), ".py")[0]
+
+    let current_buffer = matchlist(expand("%:p"), '\v(.*)(.py)')[1]
+
     for path in keys(g:coveragepy_session_map)
+        echo "Current buffer " . current_buffer
+        echo "path " . path
         if current_buffer =~ path
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
+            execute g:coveragepy_session_map[path][0]
             redraw!
             return
         endif
