@@ -23,6 +23,9 @@ Usage
 This plugin provides a single command: ``Coveragepy`` that accepts a few
 arguments. Each argument and its usage is described in detail below.
 
+Whenever a ``report`` or a ``session`` is called the cursor will be placed on
+the first uncovered line if any.
+
 ``report``
 --------
 The main action is performed with this command (same as with ``coverage.py``) and
