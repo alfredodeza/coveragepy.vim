@@ -19,25 +19,36 @@ function! s:HasCoverage() abort
 endfunction
 
 " Global variables for registering next/previous error
-let g:coveragepy_last_session = ""
-let g:coveragepy_marks        = []
-let g:coveragepy_session_map  = {}
+let g:coveragepy_last_session  = ""
+let g:coveragepy_marks         = []
+let g:coveragepy_session_map   = {}
+let g:coveragepy_is_displaying = 0
 
 
-function! s:CoveragePySyntax() abort
-  let b:current_syntax = 'CoveragePy'
-  syn match CoveragePyTitleDecoration      "\v\-{2,}"
-  syn match CoveragePyHeaders              '\v(^Name\s+|\s*Stmts\s*|\s*Miss\s+|Cover|Missing$)'
-  syn match CoveragePyDelimiter            "\v^(\-\-)\s+"
-  syn match CoveragePyPercent              "\v(\d+\%\s+)"
-  syn match CoveragePyLineNumbers          "\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)"
+function! s:ToggleSigns()
+    if exists("g:coveragepy_is_displaying") && g:coveragepy_is_displaying
+        call s:ClearSigns()
+        let g:coveragepy_is_displaying = 0
+    else
+        call s:HighlightMissing()
+    endif
+endfunction
 
-  hi def link CoveragePyFiles              Number
-  hi def link CoveragePyHeaders            Comment
-  hi def link CoveragePyTitleDecoration    Keyword
-  hi def link CoveragePyDelimiter          Comment
-  hi def link CoveragePyPercent            Boolean
-  hi def link CoveragePyLineNumbers        Error
+
+function! s:CoveragepySyntax() abort
+  let b:current_syntax = 'Coveragepy'
+  syn match CoveragepyTitleDecoration      "\v\-{2,}"
+  syn match CoveragepyHeaders              '\v(^Name\s+|\s*Stmts\s*|\s*Miss\s+|Cover|Missing$)'
+  syn match CoveragepyDelimiter            "\v^(\-\-)\s+"
+  syn match CoveragepyPercent              "\v(\d+\%\s+)"
+  syn match CoveragepyLineNumbers          "\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)"
+
+  hi def link CoveragepyFiles              Number
+  hi def link CoveragepyHeaders            Comment
+  hi def link CoveragepyTitleDecoration    Keyword
+  hi def link CoveragepyDelimiter          Comment
+  hi def link CoveragepyPercent            Boolean
+  hi def link CoveragepyLineNumbers        Error
 endfunction
 
 
@@ -71,13 +82,16 @@ endfunction
 function! s:SetHighlight()
     hi SignColumn guifg=#004400 guibg=green ctermfg=40 ctermbg=40
     hi uncovered guifg=#ff2222 guibg=red ctermfg=1 ctermbg=1
+    hi covered guifg=#004400 guibg=green ctermfg=40 ctermbg=40
     sign define uncovered text=XX texthl=uncovered
+    sign define covered text=XX texthl=covered
 endfunction
 
 function! s:HighlightMissing() abort
     call s:SetHighlight()
+    let g:coveragepy_is_displaying = 1
     if (g:coveragepy_session_map == {})
-        call s:CoveragePyReport()
+        call s:CoveragepyReport()
     endif
     call s:ClearSigns()
     let current_buffer = split(expand("%:p"), ".py")[0]
@@ -86,9 +100,12 @@ function! s:HighlightMissing() abort
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
+            redraw!
+            return
         endif
     endfor
-    redraw!
+    execute(":sign place 1 line=1  name=covered buffer=".bufnr("%"))
+    call s:Echo("Coveragepy ==> 100% covered", 1)
 endfunction
 
 
@@ -131,7 +148,7 @@ function! s:Roulette(direction) abort
 endfunction
 
 
-function! s:CoveragePyReport() abort
+function! s:CoveragepyReport() abort
     " Run a report, ignore errors and show missing lines,
     " which is what we are interested after all :)
     let original_dir = getcwd()
@@ -214,7 +231,7 @@ endfunction
 function! s:LastSession() abort
     call s:ClearAll()
     if (len(g:coveragepy_last_session) == 0)
-        call s:CoveragePyReport()
+        call s:CoveragepyReport()
     endif
     let winnr = bufwinnr('LastSession.coveragepy')
     silent! execute  winnr < 0 ? 'botright new ' . 'LastSession.coveragepy' : winnr . 'wincmd w'
@@ -231,7 +248,7 @@ function! s:LastSession() abort
     nnoremap <silent><script> <buffer> <up>    :call <sid>Roulette(-1)<CR>
     nnoremap <silent><script> <buffer> k       :call <sid>Roulette(-1)<CR>
     nnoremap <silent> <buffer> <Enter>         :call <sid>OpenBuffer()<CR>
-    call s:CoveragePySyntax()
+    call s:CoveragepySyntax()
     exe 'wincmd p'
 endfunction
 
@@ -244,7 +261,7 @@ function! s:OpenBuffer() abort
         silent! execute ":e " . absolute_path
         call s:HighlightMissing()
         execute 'wincmd p'
-        call s:CoveragePySyntax()
+        call s:CoveragepySyntax()
     else
         call s:Echo("Could not load file: " . path)
     endif
@@ -267,7 +284,7 @@ function! s:Proxy(action, ...) abort
     " Make sure that if we are called, we have coverage installed
     call s:HasCoverage()
     if (a:action == "show")
-        call s:HighlightMissing()
+        call s:ToggleSigns()
     elseif (a:action == "noshow")
         call s:ClearSigns()
     elseif (a:action == "session")
@@ -280,7 +297,7 @@ function! s:Proxy(action, ...) abort
             call s:LastSession()
         endif
     elseif (a:action == "report")
-        let report =  s:CoveragePyReport()
+        let report =  s:CoveragepyReport()
         if report == 1
             call s:LastSession()
             call s:HighlightMissing()
@@ -293,5 +310,5 @@ function! s:Proxy(action, ...) abort
 endfunction
 
 
-command! -nargs=+ -complete=custom,s:Completion CoveragePy call s:Proxy(<f-args>)
+command! -nargs=+ -complete=custom,s:Completion Coveragepy call s:Proxy(<f-args>)
 
