@@ -235,6 +235,7 @@ endfunction
 
 function! s:LastSession() abort
     call s:ClearAll()
+    let winnrback = bufwinnr(expand("%"))
     if (len(g:coveragepy_last_session) == 0)
         call s:CoveragepyReport()
     endif
@@ -254,7 +255,7 @@ function! s:LastSession() abort
     nnoremap <silent><script> <buffer> k       :call <sid>Roulette(-1)<CR>
     nnoremap <silent> <buffer> <Enter>         :call <sid>OpenBuffer()<CR>
     call s:CoveragepySyntax()
-    exe 'wincmd p'
+    exe winnrback  . 'wincmd w'
 endfunction
 
 
