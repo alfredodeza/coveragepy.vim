@@ -171,7 +171,15 @@ function! s:CoveragepyReport() abort
         exe "cd " . has_coverage
         call s:ClearSigns()
         let g:coveragepy_last_session = ""
-        let cmd = "coverage report -m -i"
+
+        " Allow for rcfile
+        if exists("g:coveragepy_rcfile")
+            let s:coveragepy_rcfile=" --rcfile=".resolve(expand(g:coveragepy_rcfile))
+        else
+            let s:coveragepy_rcfile=""
+        endif
+
+        let cmd = "coverage report -m -i".s:coveragepy_rcfile
         let out = system(cmd)
         let g:coveragepy_last_session = out
         call s:ReportParse()
