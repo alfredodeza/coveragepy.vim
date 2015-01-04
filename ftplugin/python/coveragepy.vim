@@ -12,7 +12,14 @@ if exists("g:loaded_coveragepy") || &cp
 endif
 
 function! s:HasCoverage() abort
-    if (executable("coverage") == 0)
+    let executable_list = ["coverage", "python-coverage", "python2-coverage", "python2.7-coverage"]
+    for executable_name in executable_list
+        if (executable(executable_name) == 1)
+		let g:coveragepy_executable = executable_name
+		break
+        endif
+    endfor
+    if (g:coveragepy_executable == "")
         echoerr("This plugin needs coverage.py installed and accessible")
         finish
     endif
@@ -23,6 +30,7 @@ let g:coveragepy_last_session  = ""
 let g:coveragepy_marks         = []
 let g:coveragepy_session_map   = {}
 let g:coveragepy_is_displaying = 0
+let g:coveragepy_executable    = ""
 
 
 function! s:ToggleSigns()
@@ -179,7 +187,7 @@ function! s:CoveragepyReport() abort
             let s:coveragepy_rcfile=""
         endif
 
-        let cmd = "coverage report -m -i".s:coveragepy_rcfile
+        let cmd = g:coveragepy_executable." report -m -i".s:coveragepy_rcfile
         let out = system(cmd)
         let g:coveragepy_last_session = out
         call s:ReportParse()
