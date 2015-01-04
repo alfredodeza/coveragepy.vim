@@ -12,7 +12,7 @@ if exists("g:loaded_coveragepy") || &cp
 endif
 
 function! s:HasCoverage() abort
-    let executable_list = ["coverage", "python_coverage", "python2-coverage", "python2.7-coverage"]
+    let executable_list = ["coverage", "python-coverage", "python2-coverage", "python2.7-coverage"]
     for executable_name in executable_list
         if (executable(executable_name) == 1)
 		let g:coveragepy_executable = executable_name
