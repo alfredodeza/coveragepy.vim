@@ -106,8 +106,6 @@ function! s:HighlightMissing() abort
     let current_buffer = matchlist(expand("%:p"), '\v(.*)(.py)')[1]
 
     for path in keys(g:coveragepy_session_map)
-        echo "Current buffer " . current_buffer
-        echo "path " . path
         if current_buffer =~ path
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
