@@ -11,7 +11,7 @@ statements and display the missed lines.
 
 Optionally, you can also hide or display the marks as you make progress.
 
-Showing a Coverate Report
+Showing a Coverage Report
 -------------------------
 
 .. image:: https://github.com/alfredodeza/coveragepy.vim/raw/master/extras/session.png
