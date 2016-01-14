@@ -103,10 +103,11 @@ function! s:HighlightMissing() abort
     endif
     call s:ClearSigns()
 
+    let current_buffer_py = matchlist(expand("%:p"), '\v(.*)(.py)')[0]
     let current_buffer = matchlist(expand("%:p"), '\v(.*)(.py)')[1]
 
     for path in keys(g:coveragepy_session_map)
-        if current_buffer =~ path
+        if (current_buffer =~ path) || (current_buffer_py =~ path)
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
