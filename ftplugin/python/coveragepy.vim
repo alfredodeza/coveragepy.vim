@@ -221,7 +221,7 @@ function! s:LineNumberParse(numbers) abort
     let parsed_list = []
     let splitted = split(a:numbers, ',')
     for line_no in splitted
-        if line_no =~ '-'
+        if line_no =~ '-' && (len(split(line_no, '->')) == 1)
             let split_nos = split(line_no, '-')
             let first = s:Strip(split_nos[0])
             let second = s:Strip(split_nos[1])
