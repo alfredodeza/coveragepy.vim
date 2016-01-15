@@ -275,7 +275,10 @@ endfunction
 
 
 function! s:OpenBuffer() abort
-    let path = split(getline('.'), ' ')[0] . '.py'
+    let raw_path = split(getline('.'), ' ')[0] . '.py'
+    " newer coverage versions use the .py extension, previously it
+    " didn't.
+    let path = split(raw_path, '.py')[0] . '.py'
     let absolute_path = g:coveragepy_path . '/' . path
     if filereadable(absolute_path)
         execute 'wincmd p'
