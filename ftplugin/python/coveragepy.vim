@@ -91,8 +91,10 @@ function! s:SetHighlight()
     hi SignColumn guifg=#004400 guibg=green ctermfg=40 ctermbg=40
     hi uncovered guifg=#ff2222 guibg=red ctermfg=1 ctermbg=1
     hi covered guifg=#004400 guibg=green ctermfg=40 ctermbg=40
+    hi branchuncovered guifg=#ffff00 guibg=yellow ctermfg=yellow ctermbg=yellow
     sign define uncovered text=XX texthl=uncovered
     sign define covered text=XX texthl=covered
+    sign define branchuncovered text=XX texthl=branchuncovered
 endfunction
 
 function! s:HighlightMissing() abort
@@ -111,7 +113,12 @@ function! s:HighlightMissing() abort
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
-            execute g:coveragepy_session_map[path][0]
+            for position in g:coveragepy_session_map['BRANCH' . path]
+                execute(":sign place ". position ." line=". position ." name=branchuncovered buffer=".bufnr("%"))
+            endfor
+            " FIXME: I had to comment this out because it was no longer correct
+            " after adding branch support
+            "execute g:coveragepy_session_map[path][0]
             redraw!
             return
         endif
@@ -208,12 +215,39 @@ function! s:ReportParse() abort
             let match_split  = split(line, '%')
             let line_nos     = match_split[-1]
             let all_line_nos = s:LineNumberParse(line_nos)
+            let all_branch_line_nos = s:BranchLineNumberParse(line_nos)
             let path_to_lines[path] = all_line_nos
+            let path_to_lines['BRANCH' . path] = all_branch_line_nos
         endif
     endfor
     let g:coveragepy_session_map = path_to_lines
 endfunction
 
+
+function! s:BranchLineNumberParse(numbers) abort
+    " Line numbers will come with a possible comma in them
+    " and lots of extra space. Let's remove them and strip them
+    let parsed_list = []
+    let splitted = split(a:numbers, ',')
+    for line_no in splitted
+        " only add numbers that are branch-coverage numbers
+        if len(split(line_no, '->')) > 1
+            if line_no =~ '->-'
+              let split_char = '->-'
+            else
+              let split_char = '->'
+            endif
+            if line_no =~ '-'
+                let split_nos = split(line_no, split_char)
+                let first = s:Strip(split_nos[0])
+                call add(parsed_list, first)
+            else
+                call add(parsed_list, s:Strip(line_no))
+            endif
+        endif
+    endfor
+    return parsed_list
+endfunction
 
 function! s:LineNumberParse(numbers) abort
     " Line numbers will come with a possible comma in them
@@ -221,15 +255,18 @@ function! s:LineNumberParse(numbers) abort
     let parsed_list = []
     let splitted = split(a:numbers, ',')
     for line_no in splitted
-        if line_no =~ '-' && (len(split(line_no, '->')) == 1)
-            let split_nos = split(line_no, '-')
-            let first = s:Strip(split_nos[0])
-            let second = s:Strip(split_nos[1])
-            for range_no in range(first, second)
-                call add(parsed_list, range_no)
-            endfor
-        else
-            call add(parsed_list, s:Strip(line_no))
+        " only add numbers that are not branch-coverage numbers
+        if len(split(line_no, '->')) == 1
+            if line_no =~ '-'
+                let split_nos = split(line_no, '-')
+                let first = s:Strip(split_nos[0])
+                let second = s:Strip(split_nos[1])
+                for range_no in range(first, second)
+                    call add(parsed_list, range_no)
+                endfor
+            else
+                call add(parsed_list, s:Strip(line_no))
+            endif
         endif
     endfor
     return parsed_list
