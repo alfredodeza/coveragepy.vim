@@ -21,7 +21,6 @@ function! s:HasCoverage() abort
     endfor
     if (g:coveragepy_executable == "")
         echoerr("This plugin needs coverage.py installed and accessible")
-        finish
     endif
 endfunction
 
