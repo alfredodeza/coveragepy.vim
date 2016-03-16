@@ -295,7 +295,14 @@ function! s:LastSession() abort
     setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap number filetype=coveragepy
     let session = split(g:coveragepy_last_session, '\n')
     call append(0, session)
-    silent! execute 'resize ' . line('$')
+
+    if (line('$') > 15)
+      let resize = 15
+    else
+      let resize = line('$')
+    endif
+    silent! execute 'resize ' . resize
+
     silent! execute 'normal gg'
     silent! execute 'nnoremap <silent> <buffer> q :q! <CR>'
     nnoremap <silent><script> <buffer> <C-n>   :call <sid>Roulette(1)<CR>
