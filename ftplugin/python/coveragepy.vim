@@ -334,7 +334,7 @@ endfunction
 
 
 function! s:Completion(ArgLead, CmdLine, CursorPos) abort
-    let actions = "report\nshow\nnoshow\nsession\n"
+    let actions = "report\nshow\nnoshow\nrefresh\nsession\n"
     let extras  = "version\n"
     return actions . extras
 endfunction
@@ -347,6 +347,10 @@ function! s:Proxy(action, ...) abort
         call s:ToggleSigns()
     elseif (a:action == "noshow")
         call s:ClearSigns()
+    elseif (a:action == "refresh")
+        call s:ClearAll()
+        let g:coveragepy_session_map = {}
+        call s:HighlightMissing()
     elseif (a:action == "session")
         let winnr = bufwinnr('LastSession.coveragepy')
         if (winnr != -1)

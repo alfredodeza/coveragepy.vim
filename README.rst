@@ -67,6 +67,13 @@ It is useful to be able to hide these if you are already aware about the lines
 that need to be covered and do not want to be visually disturbed by the signs.
 
 
+``refresh``
+--------
+Reloads and parses coverage data similar to ``:Coveragepy report`` but does
+not open report window and only updates line coverage marks (displayed by
+``show`` command above).
+
+
 ``version``
 -----------
 Displays the current plugin version
