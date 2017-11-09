@@ -28,14 +28,14 @@ endfunction
 let g:coveragepy_last_session  = ""
 let g:coveragepy_marks         = []
 let g:coveragepy_session_map   = {}
-let g:coveragepy_is_displaying = 0
 let g:coveragepy_executable    = ""
 
 
 function! s:ToggleSigns()
-    if exists("g:coveragepy_is_displaying") && g:coveragepy_is_displaying
+
+    if exists("b:coveragepy_is_displaying") && b:coveragepy_is_displaying
         call s:ClearSigns()
-        let g:coveragepy_is_displaying = 0
+        let b:coveragepy_is_displaying = 0
     else
         call s:HighlightMissing()
     endif
@@ -83,8 +83,9 @@ endfunction
 
 
 function! s:ClearSigns() abort
-    exe ":sign unplace *"
+    execute(":sign unplace * buffer=".bufnr("%"))
 endfunction
+
 
 function! s:SetHighlight()
     hi SignColumn guifg=#004400 guibg=green ctermfg=40 ctermbg=40
@@ -98,7 +99,7 @@ endfunction
 
 function! s:HighlightMissing() abort
     call s:SetHighlight()
-    let g:coveragepy_is_displaying = 1
+    let b:coveragepy_is_displaying = 1
     if (g:coveragepy_session_map == {})
         call s:CoveragepyReport()
     endif
