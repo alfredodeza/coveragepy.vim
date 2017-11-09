@@ -88,14 +88,19 @@ endfunction
 
 
 function! s:SetHighlight()
-    hi SignColumn guifg=#004400 guibg=green ctermfg=40 ctermbg=40
-    hi uncovered guifg=#ff2222 guibg=red ctermfg=1 ctermbg=1
-    hi covered guifg=#004400 guibg=green ctermfg=40 ctermbg=40
-    hi branchuncovered guifg=#ffff00 guibg=yellow ctermfg=yellow ctermbg=yellow
-    sign define uncovered text=XX texthl=uncovered
-    sign define covered text=XX texthl=covered
-    sign define branchuncovered text=XX texthl=branchuncovered
+    if exists('g:coveragepy_uncovered_sign')
+      let text = g:coveragepy_uncovered_sign
+    else
+      let text = '^'
+    endif
+    highlight default NoCoverage ctermfg=red guifg=#ef0000
+    highlight default NoBranchCoverage ctermfg=yellow guifg=#ebef00
+
+    execute 'sign define uncovered text=' . text . ' texthl=NoCoverage'
+    execute 'sign define branchuncovered text=' . text . ' texthl=NoBranchCoverage'
+
 endfunction
+
 
 function! s:HighlightMissing() abort
     call s:SetHighlight()
