@@ -90,7 +90,6 @@ function! s:ClearSigns() abort
       let cols = split(s)
       let name = split(cols[-1], '=')[-1]
       if name[0:8] ==# 'uncovered'
-        let id = split(cols[-2], '=')[-1]
         let id = s:sign_id
         exe printf('sign unplace %d file=%s', id, fname)
       endif
