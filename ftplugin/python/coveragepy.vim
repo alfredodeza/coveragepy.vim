@@ -29,6 +29,7 @@ let g:coveragepy_last_session  = ""
 let g:coveragepy_marks         = []
 let g:coveragepy_session_map   = {}
 let g:coveragepy_executable    = ""
+let s:sign_id                  = 9423
 
 
 function! s:ToggleSigns()
@@ -83,7 +84,17 @@ endfunction
 
 
 function! s:ClearSigns() abort
-    execute(":sign unplace * buffer=".bufnr("%"))
+    let placements = split(execute('sign place file=' . bufname('%')), '\n')
+    let fname = bufname('%')
+    for s in placements
+      let cols = split(s)
+      let name = split(cols[-1], '=')[-1]
+      if name[0:8] ==# 'uncovered'
+        let id = split(cols[-2], '=')[-1]
+        let id = s:sign_id
+        exe printf('sign unplace %d file=%s', id, fname)
+      endif
+    endfor
 endfunction
 
 
@@ -116,10 +127,10 @@ function! s:HighlightMissing() abort
     for path in keys(g:coveragepy_session_map)
         if (current_buffer =~ path) || (current_buffer_py =~ path)
             for position in g:coveragepy_session_map[path]
-                execute(":sign place ". position ." line=". position ." name=uncovered buffer=".bufnr("%"))
+                execute(":sign place ". s:sign_id ." line=". position ." name=uncovered buffer=".bufnr("%"))
             endfor
             for position in g:coveragepy_session_map['BRANCH' . path]
-                execute(":sign place ". position ." line=". position ." name=branchuncovered buffer=".bufnr("%"))
+                execute(":sign place ". s:sign_id ." line=". position ." name=branchuncovered buffer=".bufnr("%"))
             endfor
             " FIXME: I had to comment this out because it was no longer correct
             " after adding branch support
@@ -128,7 +139,6 @@ function! s:HighlightMissing() abort
             return
         endif
     endfor
-    execute(":sign place 1 line=1  name=covered buffer=".bufnr("%"))
     call s:Echo("Coveragepy ==> 100% covered", 1)
 endfunction
 
