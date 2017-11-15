@@ -79,6 +79,20 @@ not open report window and only updates line coverage marks (displayed by
 Displays the current plugin version
 
 
+sign configuration
+------------------
+By default, the character used for identifying uncovered lines is '^', but this
+can be overridden with the following configuration flag::
+
+    g:coveragepy_uncovered_sign
+
+In a ``.vimrc`` file or locally in a buffer, changing this value to `-` would
+look like::
+
+    let g:coveragepy_uncovered_sign = '-'
+
+
+
 License
 -------
 
