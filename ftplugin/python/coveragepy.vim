@@ -7,7 +7,7 @@
 "============================================================================
 
 
-if exists("g:loaded_coveragepy") || &cp
+if exists('g:loaded_coveragepy') || &compatible
   finish
 endif
 
@@ -19,7 +19,7 @@ function! s:HasCoverage() abort
 		break
         endif
     endfor
-    if (g:coveragepy_executable == "")
+    if g:coveragepy_executable ==# ""
         echoerr("This plugin needs coverage.py installed and accessible")
     endif
 endfunction
@@ -75,7 +75,7 @@ endfun
 
 function! s:FindCoverage() abort
     let found = findfile(".coverage", ".;")
-    if (found !~ '.coverage')
+    if found !~# '.coverage'
         return ""
     endif
     " Return the actual directory where .coverage is found
@@ -188,7 +188,7 @@ function! s:CoveragepyReport() abort
     " First try to see if we actually have a .coverage file
     " to work with
     let has_coverage = s:FindCoverage()
-    if (has_coverage == "")
+    if has_coverage ==# ""
         return 0
     else
         " set the original directory path
@@ -224,7 +224,7 @@ function! s:ReportParse() abort
     " line numbers mapped to files
     let path_to_lines = {}
     for line in split(g:coveragepy_last_session, '\n')
-        if (line =~ '\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)') && line !~ '\v(100\%)'
+        if line =~# '\v(\s*\d+,|\d+-\d+,|\d+-\d+$|\d+$)' && line !~# '\v(100\%)'
             let path         = split(line, ' ')[0]
             let match_split  = split(line, '%')
             let line_nos     = match_split[-1]
@@ -246,12 +246,12 @@ function! s:BranchLineNumberParse(numbers) abort
     for line_no in splitted
         " only add numbers that are branch-coverage numbers
         if len(split(line_no, '->')) > 1
-            if line_no =~ '->-'
+            if line_no =~# '->-'
               let split_char = '->-'
             else
               let split_char = '->'
             endif
-            if line_no =~ '-'
+            if line_no =~# '-'
                 let split_nos = split(line_no, split_char)
                 let first = s:Strip(split_nos[0])
                 call add(parsed_list, first)
@@ -271,7 +271,7 @@ function! s:LineNumberParse(numbers) abort
     for line_no in splitted
         " only add numbers that are not branch-coverage numbers
         if len(split(line_no, '->')) == 1
-            if line_no =~ '-'
+            if line_no =~# '-'
                 let split_nos = split(line_no, '-')
                 let first = s:Strip(split_nos[0])
                 let second = s:Strip(split_nos[1])
@@ -358,24 +358,24 @@ endfunction
 function! s:Proxy(action, ...) abort
     " Make sure that if we are called, we have coverage installed
     call s:HasCoverage()
-    if (a:action == "show")
+    if a:action ==# 'show'
         call s:ToggleSigns()
-    elseif (a:action == "noshow")
+    elseif a:action ==# 'noshow'
         call s:ClearSigns()
-    elseif (a:action == "refresh")
+    elseif a:action ==# 'refresh'
         call s:ClearAll()
         let g:coveragepy_session_map = {}
         call s:HighlightMissing()
-    elseif (a:action == "session")
+    elseif a:action ==# 'session'
         let winnr = bufwinnr('LastSession.coveragepy')
-        if (winnr != -1)
+        if winnr != -1
                 silent! execute 'wincmd b'
                 silent! execute 'q'
             return
         else
             call s:LastSession()
         endif
-    elseif (a:action == "report")
+    elseif a:action ==# "report"
         let report =  s:CoveragepyReport()
         if report == 1
             call s:LastSession()
@@ -383,7 +383,7 @@ function! s:Proxy(action, ...) abort
         else
             call s:Echo("No .coverage was found in current or parent dirs")
         endif
-    elseif (a:action == "version")
+    elseif a:action ==# "version"
         call s:Version()
     endif
 endfunction
