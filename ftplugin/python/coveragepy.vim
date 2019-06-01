@@ -88,10 +88,13 @@ function! s:ClearSigns() abort
     let fname = bufname('%')
     for s in placements
       let cols = split(s)
+      let id = split(cols[1], '=')[-1]
+      if id !=# s:sign_id
+        continue
+      endif
       let name = split(cols[-1], '=')[-1]
-      if name[0:8] ==# 'uncovered'
-        let id = s:sign_id
-        exe printf('sign unplace %d file=%s', id, fname)
+      if name[-9:] ==# 'uncovered'
+        exe printf('sign unplace %d file=%s', s:sign_id, fname)
       endif
     endfor
 endfunction
