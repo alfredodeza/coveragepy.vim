@@ -92,6 +92,23 @@ look like::
     let g:coveragepy_uncovered_sign = '-'
 
 
+Executable auto-detection
+-------------------------
+The plugin tries to detect the right executable name for ``coverage`` in the
+following order of precedence:
+
+* ``coverage``
+* ``python-coverage``
+* ``python3-coverage``
+* ``python2-coverage``
+* ``python2.7-coverage``
+
+If none of the above match or if multiple exist but are not suitable for the
+project (e.g. both python2 and python3 exist), it is possible to force it by
+using the following configuration flag::
+
+    let g:coveragepy_executable = "/path/to/prefered/coverage"
+
 
 License
 -------
