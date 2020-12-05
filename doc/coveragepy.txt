@@ -30,7 +30,7 @@ Optionally, you can also hide or display the marks as you make progress.
 ==============================================================================
 2. Usage                                                     *CoveragepyUsage*
 
-This plugin provides a single command::
+This plugin provides a single command::                      *:Coveragepy*
 
     Coveragepy
 
