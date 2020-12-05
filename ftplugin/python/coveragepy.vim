@@ -118,7 +118,9 @@ function! s:HighlightMissing() abort
     let current_buffer = matchlist(expand("%:p"), '\v(.*)(.py)')[1]
 
     for path in keys(g:coveragepy_session_map)
-        if (current_buffer =~ path) || (current_buffer_py =~ path)
+        " escape path to use it as a regex pattern
+        let path_pattern = '\V' . escape(path, '\')
+        if (current_buffer =~ path_pattern) || (current_buffer_py =~ path_pattern)
             for position in g:coveragepy_session_map[path]
                 execute(":sign place ". position ." line=". position ." group=uncovered name=uncovered buffer=".bufnr("%"))
             endfor
